@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Joba - AI-Powered Job Hunter",
+  title: "Joba LLama - AI-Powered Job Hunter",
   description:
     "Automate your job search with AI-generated resumes and cover letters. Apply to dozens of jobs in minutes, not hours.",
 };

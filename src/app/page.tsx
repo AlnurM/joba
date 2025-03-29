@@ -24,7 +24,7 @@ export default function LandingPage() {
           <div className="flex gap-6 md:gap-10">
             <Link href="/" className="flex items-center space-x-2">
               <Rocket className="h-6 w-6 text-primary" />
-              <span className="inline-block font-bold text-xl">Joba</span>
+              <span className="inline-block font-bold text-xl">Joba Llama</span>
             </Link>
             <nav className="hidden gap-6 md:flex">
               <Link
@@ -80,15 +80,16 @@ export default function LandingPage() {
                     <Rocket className="ml-2 inline-block h-10 w-10 animate-pulse text-primary" />
                   </h1>
                   <p className="max-w-[700px] text-xl text-muted-foreground md:text-2xl">
-                    Joba is your ultimate AI job-hunting assistant, designed to
-                    automate your job search and land interviews faster.
+                    Joba Llama is your ultimate AI job-hunting assistant,
+                    designed to automate your job search and land interviews
+                    faster.
                   </p>
                 </div>
 
                 <p className="text-lg text-muted-foreground md:text-xl">
                   With auto-generated, tailored resumes and cover letters, Joba
-                  applies to jobs for you—so you can focus on preparing for
-                  interviews, not filling out applications.
+                  Llama applies to jobs for you—so you can focus on preparing
+                  for interviews, not filling out applications.
                 </p>
 
                 <div className="space-y-4 md:space-y-6">
@@ -145,7 +146,7 @@ export default function LandingPage() {
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5"></div>
                   <Image
                     src="/placeholder.svg?height=500&width=500"
-                    alt="Joba AI Job Hunter"
+                    alt="Joba Llama AI Job Hunter"
                     fill
                     className="object-cover"
                     priority
@@ -175,7 +176,7 @@ export default function LandingPage() {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
-                  Why Joba?
+                  Why Joba Llama?
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">
                   Features That Get You Hired
@@ -248,7 +249,7 @@ export default function LandingPage() {
                   Simple 3-Step Process
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl">
-                  Getting started with Joba is quick and easy.
+                  Getting started with Joba Llama is quick and easy.
                 </p>
               </div>
             </div>
@@ -303,7 +304,9 @@ export default function LandingPage() {
                   alt="Automated Applications"
                   className="rounded-md object-cover"
                 />
-                <h3 className="pt-4 text-xl font-bold">Let Joba Do The Rest</h3>
+                <h3 className="pt-4 text-xl font-bold">
+                  Let Joba Llama Do The Rest
+                </h3>
                 <p className="text-center text-muted-foreground">
                   Our AI finds matching jobs, creates tailored applications, and
                   submits them automatically.
@@ -340,9 +343,9 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-muted-foreground">
-                    "Joba saved me at least 15 hours a week on job applications.
-                    The tailored cover letters were so good that my interview
-                    rate tripled!"
+                    "Joba Llama saved me at least 15 hours a week on job
+                    applications. The tailored cover letters were so good that
+                    my interview rate tripled!"
                   </p>
                 </div>
                 <div className="flex items-center space-x-4 pt-4">
@@ -373,9 +376,9 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-muted-foreground">
-                    "As a recent graduate, I was struggling to get noticed.
-                    Joba's AI-generated resumes highlighted my skills perfectly.
-                    I got 3 interviews in my first week!"
+                    "As a recent graduate, I was struggling to get noticed. Joba
+                    Llama's AI-generated resumes highlighted my skills
+                    perfectly. I got 3 interviews in my first week!"
                   </p>
                 </div>
                 <div className="flex items-center space-x-4 pt-4">
@@ -406,7 +409,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-muted-foreground">
-                    "The job matching feature is incredible. Joba found
+                    "The job matching feature is incredible. Joba Llama found
                     positions I would have never discovered on my own, and they
                     were perfect fits for my experience."
                   </p>
@@ -445,14 +448,14 @@ export default function LandingPage() {
                   Frequently Asked Questions
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl">
-                  Everything you need to know about Joba.
+                  Everything you need to know about Joba Llama.
                 </p>
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl gap-6 py-12 md:grid-cols-2">
               <div className="space-y-2">
                 <h3 className="text-xl font-bold">
-                  When will Joba be available?
+                  When will Joba Llama be available?
                 </h3>
                 <p className="text-muted-foreground">
                   We're currently in private beta and plan to launch publicly in
@@ -471,11 +474,11 @@ export default function LandingPage() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold">
-                  Which job boards does Joba work with?
+                  Which job boards does Joba Llama work with?
                 </h3>
                 <p className="text-muted-foreground">
-                  Joba integrates with all major job boards including LinkedIn,
-                  Indeed, Glassdoor, ZipRecruiter, and many more.
+                  Joba Llama integrates with all major job boards including
+                  LinkedIn, Indeed, Glassdoor, ZipRecruiter, and many more.
                 </p>
               </div>
               <div className="space-y-2">
@@ -487,7 +490,9 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-bold">How much will Joba cost?</h3>
+                <h3 className="text-xl font-bold">
+                  How much will Joba Llama cost?
+                </h3>
                 <p className="text-muted-foreground">
                   We'll offer multiple pricing tiers to suit different needs.
                   Waitlist members will receive special early-bird pricing and
@@ -501,7 +506,7 @@ export default function LandingPage() {
                 <p className="text-muted-foreground">
                   You'll have full control over your applications. You can
                   choose to review each one before it's submitted or let Joba
-                  handle everything automatically.
+                  Llama handle everything automatically.
                 </p>
               </div>
             </div>
@@ -518,7 +523,7 @@ export default function LandingPage() {
                 </h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
                   Join the waitlist today and be the first to experience
-                  effortless job hunting with Joba.
+                  effortless job hunting with Joba Llama.
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
@@ -561,10 +566,11 @@ export default function LandingPage() {
           <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
             <Link href="/" className="flex items-center space-x-2">
               <Rocket className="h-6 w-6 text-primary" />
-              <span className="inline-block font-bold">Joba</span>
+              <span className="inline-block font-bold">Joba Llama</span>
             </Link>
             <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-              &copy; {new Date().getFullYear()} Joba, Inc. All rights reserved.
+              &copy; {new Date().getFullYear()} Joba Llama, Inc. All rights
+              reserved.
             </p>
           </div>
           <div className="flex gap-4">
