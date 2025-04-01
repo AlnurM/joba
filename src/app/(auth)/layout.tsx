@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/shared/ui";
-import "./globals.css";
+import "../globals.css";
+import { ThemeProvider } from "@/shared/ui/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "Track your job applications and manage your career journey",
 };
 
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;

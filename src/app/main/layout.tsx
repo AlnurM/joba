@@ -1,9 +1,12 @@
+"use client";
+
 import type React from "react";
 import { MenuSidebar } from "@/widgets/sidebar";
+import { AuthGuard } from "@/entities/auth";
 import { ThemeProvider, SidebarProvider, SidebarInset } from "@/shared/ui";
 import "@/app/globals.css";
 
-export default function RootLayout({
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -23,7 +26,9 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <MenuSidebar />
-            <SidebarInset>{children}</SidebarInset>
+            <SidebarInset>
+              <AuthGuard>{children}</AuthGuard>
+            </SidebarInset>
           </SidebarProvider>
         </ThemeProvider>
       </body>
