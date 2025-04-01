@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+FSD Implementation Guidelines
+Follow these rules when writing code:
+
+Strictly follow FSD layers:
+
+app/ – App initialization, routing, providers.
+
+pages/ – Routing-based components (Next.js) or entry points.
+
+features/ – Feature-specific logic, UI, and business logic.
+
+entities/ – Core business entities and domain models.
+
+shared/ – Reusable utilities, UI kits, and helpers.
+
+Avoid circular dependencies between slices.
+
+Use public API exports (index.ts) for each layer to control access.
+
+Prefer dependency injection over direct imports between features.
+
+State management should be feature-scoped (avoid global stores unless necessary).
+
+Type everything – use interface for public APIs, type for internal structures.
+
+Write pure domain logic in entities/, side effects in features/.
+
+API calls should be isolated in features/{feature}/api/ or shared/api.
+
+UI components should be dumb where possible; business logic belongs in hooks/services.
+
+Always use descriptive, domain-aligned naming (e.g., user-profile, cart-checkout).

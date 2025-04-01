@@ -23,7 +23,7 @@ export default function Home() {
     <>
       <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
         <SidebarTrigger />
-        <div>
+        <div className="hidden md:block">
           <h1 className="text-lg font-semibold">Dashboard</h1>
           <p className="text-sm text-muted-foreground">
             Welcome back to Joba Llama
@@ -31,16 +31,16 @@ export default function Home() {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <Button variant="outline" size="sm">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            <RefreshCw className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:block">Refresh</span>
           </Button>
           <Button variant="outline" size="sm">
-            <Pause className="mr-2 h-4 w-4" />
-            Pause Automation
+            <Pause className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:block">Pause Automation</span>
           </Button>
           <Button size="sm">
-            <Play className="mr-2 h-4 w-4" />
-            Resume
+            <Play className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:block">Resume</span>
           </Button>
         </div>
       </header>

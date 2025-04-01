@@ -197,7 +197,7 @@ John Doe`;
     <>
       <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
         <SidebarTrigger />
-        <div>
+        <div className="hidden md:block">
           <h1 className="text-lg font-semibold">Cover Letter Customizer</h1>
           <p className="text-sm text-muted-foreground">
             Create tailored cover letters with customizable templates
