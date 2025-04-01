@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   BarChart3,
   FileText,
@@ -40,37 +41,44 @@ const navigationItems = [
   {
     title: "Dashboard",
     icon: BarChart3,
-    url: "/dashboard",
+    url: "/main",
   },
   {
     title: "CV Generator",
     icon: FileText,
-    url: "/cv-generator",
+    url: "/main/cv-generator",
   },
   {
     title: "Cover Letter Customizer",
     icon: PenLine,
-    url: "/cover-letter",
+    url: "/main/cover-letter",
   },
   {
     title: "Lucene Query Settings",
     icon: Search,
-    url: "/lucene-query",
+    url: "/main/lucene-query",
   },
   {
     title: "Integrations",
     icon: Link,
-    url: "/integrations",
+    url: "/main/integrations",
   },
   {
     title: "Settings",
     icon: Settings,
-    url: "/settings",
+    url: "/main/settings",
   },
 ];
 
 export function MenuSidebar() {
-  const [activeItem, setActiveItem] = React.useState("Dashboard");
+  const pathname = usePathname();
+
+  const isActive = (url: string) => {
+    if (url === "/main") {
+      return pathname === url;
+    }
+    return pathname.startsWith(url);
+  };
 
   return (
     <Sidebar>
@@ -96,8 +104,7 @@ export function MenuSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={activeItem === item.title}
-                    onClick={() => setActiveItem(item.title)}
+                    isActive={isActive(item.url)}
                     tooltip={item.title}
                   >
                     <a href={item.url}>
