@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getResumes } from "../api/getResumes";
+import { getResumes } from "../api";
 import { GetResumesParams, ResumesResponse } from "./types";
 
 export const useResumes = (params: GetResumesParams) => {
