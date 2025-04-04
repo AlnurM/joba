@@ -19,3 +19,4 @@ export * from "./table-pagination";
 export * from "./toast";
 export * from "./dialog";
 export * from "./confirm-dialog";
+export * from "./progress";
