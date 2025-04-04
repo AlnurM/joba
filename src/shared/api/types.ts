@@ -1,8 +1,9 @@
 export interface FetchOptions extends RequestInit {
   skipAuth?: boolean;
+  rawResponse?: boolean;
 }
 
-export interface QueueItem {
-  resolve: (value: Response) => void;
+export interface QueueItem<T = any> {
+  resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: any) => void;
 }
