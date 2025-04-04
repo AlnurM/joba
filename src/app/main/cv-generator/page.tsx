@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Upload, Download, Edit, Trash2, Plus } from "lucide-react";
+import {
+  FileText,
+  Upload,
+  Download,
+  Edit,
+  Trash2,
+  Plus,
+  Loader2,
+} from "lucide-react";
 import { format } from "date-fns";
 import {
   SidebarTrigger,
@@ -25,7 +33,12 @@ import {
   useToast,
   ConfirmDialog,
 } from "@/shared/ui";
-import { useResumes, downloadResume, deleteResume } from "@/entities/resume";
+import {
+  useResumes,
+  downloadResume,
+  deleteResume,
+  uploadResume,
+} from "@/entities/resume";
 
 export default function CVGeneratorPage() {
   const { toast } = useToast();
@@ -33,6 +46,7 @@ export default function CVGeneratorPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data, isLoading, isError, refetch } = useResumes({
     page,
@@ -107,10 +121,30 @@ export default function CVGeneratorPage() {
     fileInput.accept = ".pdf,.doc,.docx";
     fileInput.click();
 
-    fileInput.onchange = (event) => {
+    fileInput.onchange = async (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
-        console.log(`Uploading file: ${file.name}`);
+        try {
+          setIsUploading(true);
+          await uploadResume(file);
+          toast({
+            title: "Success",
+            description: "Resume uploaded successfully",
+          });
+          refetch(); // Refresh the list
+        } catch (error) {
+          console.log(error);
+          toast({
+            title: "Error",
+            description:
+              error instanceof Error
+                ? error.message
+                : "Failed to upload resume",
+            variant: "destructive",
+          });
+        } finally {
+          setIsUploading(false);
+        }
       }
     };
   };
@@ -150,9 +184,13 @@ export default function CVGeneratorPage() {
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Button onClick={handleUploadCV}>
-            <Upload className="mr-2 h-4 w-4" />
-            Upload CV
+          <Button onClick={handleUploadCV} disabled={isUploading}>
+            {isUploading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="mr-2 h-4 w-4" />
+            )}
+            {isUploading ? "Uploading..." : "Upload CV"}
           </Button>
           <Button variant="outline" disabled>
             <Plus className="mr-2 h-4 w-4" />
@@ -280,9 +318,13 @@ export default function CVGeneratorPage() {
                   create a new one to get started.
                 </p>
                 <div className="mt-6 flex gap-4">
-                  <Button onClick={handleUploadCV}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload CV
+                  <Button onClick={handleUploadCV} disabled={isUploading}>
+                    {isUploading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="mr-2 h-4 w-4" />
+                    )}
+                    {isUploading ? "Uploading..." : "Upload CV"}
                   </Button>
                   <Button variant="outline" disabled>
                     <Plus className="mr-2 h-4 w-4" />

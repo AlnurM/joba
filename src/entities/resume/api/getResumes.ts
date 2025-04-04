@@ -36,3 +36,24 @@ export const deleteResume = async (resumeId: string): Promise<void> => {
     method: "DELETE",
   });
 };
+
+export const uploadResume = async (file: File): Promise<void> => {
+  if (
+    ![
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ].includes(file.type)
+  ) {
+    throw new Error("Only PDF, DOC, and DOCX files are allowed");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  await customFetch<void>(`${API_URL}/resumes/upload`, {
+    method: "POST",
+    body: formData,
+    headers: {}, // Важно: не устанавливаем Content-Type, браузер сам установит с boundary для FormData
+  });
+};
