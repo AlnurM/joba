@@ -73,6 +73,12 @@ export default function CVGeneratorPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
+      toast({
+        title: "Success",
+        description: "Resume downloaded successfully",
+        variant: "success",
+      });
     } catch (error) {
       console.log(error);
       toast({
@@ -101,6 +107,7 @@ export default function CVGeneratorPage() {
       toast({
         title: "Success",
         description: "Resume deleted successfully",
+        variant: "success",
       });
       refetch(); // Refresh the list
     } catch (error) {
@@ -130,6 +137,7 @@ export default function CVGeneratorPage() {
           toast({
             title: "Success",
             description: "Resume uploaded successfully",
+            variant: "success",
           });
           refetch(); // Refresh the list
         } catch (error) {
