@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   ConfirmDialog,
+  useToast,
 } from "@/shared/ui";
 import { FileText, Plus, Archive, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -30,9 +31,11 @@ import {
   useDeleteCoverLetter,
   useUpdateCoverLetterStatus,
 } from "@/entities/cover-letter";
+import { useHasActiveResume } from "@/entities/resume";
 
 export default function CoverLetterList() {
   const router = useRouter();
+  const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [letterToDelete, setLetterToDelete] = useState<string | null>(null);
@@ -42,6 +45,8 @@ export default function CoverLetterList() {
     page,
     per_page: itemsPerPage,
   });
+
+  const { hasActiveResume, isLoading: isCheckingResume } = useHasActiveResume();
 
   const deleteMutation = useDeleteCoverLetter();
   const updateStatusMutation = useUpdateCoverLetterStatus();
@@ -67,6 +72,20 @@ export default function CoverLetterList() {
     closeDeleteModal();
   };
 
+  const handleCreateClick = () => {
+    if (!hasActiveResume) {
+      toast({
+        title: "Action Required",
+        description:
+          "Please upload or activate a CV first before creating a cover letter.",
+        variant: "destructive",
+      });
+      router.push("/main/cv-generator");
+      return;
+    }
+    router.push("/main/cover-letter/create");
+  };
+
   return (
     <>
       <ConfirmDialog
@@ -90,8 +109,9 @@ export default function CoverLetterList() {
         </div>
         <div className="ml-auto">
           <Button
-            onClick={() => router.push("/main/cover-letter/create")}
+            onClick={handleCreateClick}
             className="bg-blue-500 hover:bg-blue-600"
+            disabled={isCheckingResume}
           >
             <Plus className="mr-2 h-4 w-4" />
             Create New
@@ -242,8 +262,9 @@ export default function CoverLetterList() {
                 </p>
                 <div className="mt-6">
                   <Button
-                    onClick={() => router.push("/main/cover-letter/create")}
+                    onClick={handleCreateClick}
                     className="bg-blue-500 hover:bg-blue-600"
+                    disabled={isCheckingResume || !hasActiveResume}
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     Create New

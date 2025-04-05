@@ -16,6 +16,18 @@ export const useResumes = (params: GetResumesParams) => {
   });
 };
 
+export const useHasActiveResume = () => {
+  const { data } = useQuery<ResumesResponse>({
+    queryKey: ["resumes", { page: 1, per_page: 1 }],
+    queryFn: () => getResumes({ page: 1, per_page: 1 }),
+  });
+  return {
+    hasActiveResume:
+      data?.list.some((resume) => resume.status === "active") ?? false,
+    isLoading: !data,
+  };
+};
+
 export const useDownloadResume = () => {
   const { toast } = useToast();
 
