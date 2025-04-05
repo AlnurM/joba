@@ -5,11 +5,12 @@ import {
   FileText,
   Upload,
   Download,
-  Edit,
   Trash2,
   Plus,
   Loader2,
   FileIcon,
+  Archive,
+  RefreshCw,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -31,19 +32,37 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   TablePagination,
-  useToast,
   ConfirmDialog,
   Progress,
 } from "@/shared/ui";
 import {
   useResumes,
-  downloadResume,
-  deleteResume,
-  uploadResume,
+  useDownloadResume,
+  useDeleteResume,
+  useUploadResume,
+  useUpdateResumeStatus,
 } from "@/entities/resume";
 
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return bytes + " bytes";
+  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+  else return (bytes / 1048576).toFixed(1) + " MB";
+};
+
+const getStatusBadgeVariant = (status: string) => {
+  switch (status) {
+    case "active":
+      return "default";
+    case "draft":
+      return "secondary";
+    case "archived":
+      return "outline";
+    default:
+      return "default";
+  }
+};
+
 export default function CVGeneratorPage() {
-  const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
@@ -56,45 +75,19 @@ export default function CVGeneratorPage() {
   } | null>(null);
   const [analysisStep, setAnalysisStep] = useState<string>("");
 
-  const { data, isLoading, isError, refetch } = useResumes({
+  const { data, isLoading, isError } = useResumes({
     page,
     per_page: itemsPerPage,
   });
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
+  const downloadMutation = useDownloadResume();
+  const deleteMutation = useDeleteResume();
+  const uploadMutation = useUploadResume();
+  const updateStatusMutation = useUpdateResumeStatus();
 
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(Number(value));
     setPage(1);
-  };
-
-  const handleDownload = async (resumeId: string, filename: string) => {
-    try {
-      const blob = await downloadResume(resumeId);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast({
-        title: "Success",
-        description: "Resume downloaded successfully",
-        variant: "success",
-      });
-    } catch (error) {
-      console.log(error);
-      toast({
-        title: "Error",
-        description: "Failed to download resume",
-        variant: "destructive",
-      });
-    }
   };
 
   const openDeleteModal = (resumeId: string) => {
@@ -107,33 +100,10 @@ export default function CVGeneratorPage() {
     setResumeToDelete(null);
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = () => {
     if (!resumeToDelete) return;
-
-    try {
-      await deleteResume(resumeToDelete);
-      toast({
-        title: "Success",
-        description: "Resume deleted successfully",
-        variant: "success",
-      });
-      refetch(); // Refresh the list
-    } catch (error) {
-      console.log(error);
-      toast({
-        title: "Error",
-        description: "Failed to delete resume",
-        variant: "destructive",
-      });
-    } finally {
-      closeDeleteModal();
-    }
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + " bytes";
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-    else return (bytes / 1048576).toFixed(1) + " MB";
+    deleteMutation.mutate(resumeToDelete);
+    closeDeleteModal();
   };
 
   const handleUploadCV = () => {
@@ -192,25 +162,17 @@ export default function CVGeneratorPage() {
             });
           }, 800);
 
-          await uploadResume(file);
+          await uploadMutation.mutateAsync(file);
 
           clearInterval(progressInterval);
           setUploadProgress(100);
           setAnalysisStep("Upload complete!");
 
-          // Keep progress visible for a moment
           setTimeout(() => {
             setIsUploading(false);
             setUploadingFile(null);
             setUploadProgress(0);
             setAnalysisStep("");
-
-            toast({
-              title: "Success",
-              description: "Resume uploaded successfully",
-              variant: "success",
-            });
-            refetch(); // Refresh the list
           }, 1500);
         } catch (error) {
           console.log(error);
@@ -218,31 +180,9 @@ export default function CVGeneratorPage() {
           setUploadingFile(null);
           setUploadProgress(0);
           setAnalysisStep("");
-
-          toast({
-            title: "Error",
-            description:
-              error instanceof Error
-                ? error.message
-                : "Failed to upload resume",
-            variant: "destructive",
-          });
         }
       }
     };
-  };
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case "active":
-        return "default";
-      case "draft":
-        return "secondary";
-      case "archived":
-        return "outline";
-      default:
-        return "default";
-    }
   };
 
   return (
@@ -359,7 +299,7 @@ export default function CVGeneratorPage() {
                       <TableRow key={cv.id}>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-primary" />
+                            <FileText className="h-4 min-w-4 text-primary" />
                             {cv.filename}
                           </div>
                         </TableCell>
@@ -403,16 +343,40 @@ export default function CVGeneratorPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
                                 onClick={() =>
-                                  handleDownload(cv.id, cv.filename)
+                                  downloadMutation.mutate({
+                                    resumeId: cv.id,
+                                    filename: cv.filename,
+                                  })
                                 }
                               >
                                 <Download className="mr-2 h-4 w-4" />
                                 <span>Download</span>
                               </DropdownMenuItem>
-                              <DropdownMenuItem disabled>
-                                <Edit className="mr-2 h-4 w-4" />
-                                <span>Edit</span>
-                              </DropdownMenuItem>
+                              {cv.status === "active" ? (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    updateStatusMutation.mutate({
+                                      resumeId: cv.id,
+                                      status: "archived",
+                                    })
+                                  }
+                                >
+                                  <Archive className="mr-2 h-4 w-4" />
+                                  <span>Archive</span>
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    updateStatusMutation.mutate({
+                                      resumeId: cv.id,
+                                      status: "active",
+                                    })
+                                  }
+                                >
+                                  <RefreshCw className="mr-2 h-4 w-4" />
+                                  <span>Activate</span>
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuItem
                                 className="text-destructive"
                                 onClick={() => openDeleteModal(cv.id)}
@@ -431,7 +395,7 @@ export default function CVGeneratorPage() {
                   totalItems={data.pagination.total}
                   currentPage={data.pagination.currentPage}
                   itemsPerPage={data.pagination.perPage}
-                  onPageChange={handlePageChange}
+                  onPageChange={setPage}
                   onItemsPerPageChange={handleItemsPerPageChange}
                 />
               </div>

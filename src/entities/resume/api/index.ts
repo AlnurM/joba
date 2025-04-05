@@ -57,3 +57,16 @@ export const uploadResume = async (file: File): Promise<void> => {
     headers: {}, // Важно: не устанавливаем Content-Type, браузер сам установит с boundary для FormData
   });
 };
+
+export const updateResumeStatus = async (
+  resumeId: string,
+  status: "active" | "archived",
+): Promise<void> => {
+  await customFetch<void>(`${API_URL}/resumes/${resumeId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status }),
+  });
+};
