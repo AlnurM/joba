@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Copy, Download, Wand2, Save, InfoIcon } from "lucide-react";
 import { useResumes } from "@/entities/resume";
 import {
@@ -9,6 +9,7 @@ import {
   useRenderCoverLetter,
   useCreateCoverLetter,
   useCoverLetter,
+  useUpdateCoverLetter,
 } from "@/entities/cover-letter";
 import {
   SidebarTrigger,
@@ -109,8 +110,9 @@ const renderHighlightedText = (text: string) => {
   );
 };
 
-export default function CoverLetterPage() {
+const CoverLetterPage = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const params = useParams();
 
   const { data: coverLetter } = useCoverLetter(params.id as string);
@@ -137,6 +139,7 @@ export default function CoverLetterPage() {
   const generateMutation = useGenerateCoverLetterText();
   const renderMutation = useRenderCoverLetter();
   const createMutation = useCreateCoverLetter();
+  const updateMutation = useUpdateCoverLetter();
 
   const handleGenerateText = () => {
     if (!selectedResumeId) {
@@ -200,22 +203,33 @@ export default function CoverLetterPage() {
   };
 
   const handleSaveTemplate = () => {
-    createMutation.mutate(
-      {
-        name: coverLetterTitle || "Basic",
-        content: templateContent,
-        status: "archived",
-      },
-      {
-        onSuccess: () => {
-          setCoverLetterTitle("");
-          localStorage.setItem(`cover-letter-introduction`, "");
-          localStorage.setItem(`cover-letter-body_part_1`, "");
-          localStorage.setItem(`cover-letter-body_part_2`, "");
-          localStorage.setItem(`cover-letter-conclusion`, "");
+    if (params.id) {
+      updateMutation.mutate({
+        id: params.id as string,
+        data: {
+          name: coverLetterTitle || "Basic",
+          content: templateContent,
         },
-      },
-    );
+      });
+    } else {
+      createMutation.mutate(
+        {
+          name: coverLetterTitle || "Basic",
+          content: templateContent,
+          status: "archived",
+        },
+        {
+          onSuccess: (data) => {
+            setCoverLetterTitle("");
+            localStorage.setItem(`cover-letter-introduction`, "");
+            localStorage.setItem(`cover-letter-body_part_1`, "");
+            localStorage.setItem(`cover-letter-body_part_2`, "");
+            localStorage.setItem(`cover-letter-conclusion`, "");
+            router.push(`/main/cover-letter/${data.id}`);
+          },
+        },
+      );
+    }
   };
 
   useEffect(() => {
@@ -499,4 +513,6 @@ export default function CoverLetterPage() {
       </main>
     </>
   );
-}
+};
+
+export default CoverLetterPage;

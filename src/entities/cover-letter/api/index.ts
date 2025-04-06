@@ -47,7 +47,7 @@ export const updateCoverLetter = async (
   data: Partial<CoverLetter>,
 ): Promise<CoverLetter> => {
   return customFetch<CoverLetter>(`${API_URL}/cover-letters/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
