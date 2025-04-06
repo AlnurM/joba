@@ -163,10 +163,16 @@ export default function CoverLetterList() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {format(new Date(letter.created_at), "MMM d, yyyy")}
+                          {format(
+                            new Date(letter.created_at),
+                            "MMM d, yyyy HH:mm",
+                          )}
                         </TableCell>
                         <TableCell>
-                          {format(new Date(letter.updated_at), "MMM d, yyyy")}
+                          {format(
+                            new Date(letter.updated_at),
+                            "MMM d, yyyy HH:mm",
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge

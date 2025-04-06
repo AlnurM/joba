@@ -304,7 +304,7 @@ export default function CVGeneratorPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {format(new Date(cv.created_at), "d MMM yyyy HH:mm")}
+                          {format(new Date(cv.created_at), "MMM d, yyyy HH:mm")}
                         </TableCell>
                         <TableCell>
                           {cv.filename.split(".").pop()?.toUpperCase()}
