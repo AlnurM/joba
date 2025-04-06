@@ -5,13 +5,14 @@ import {
   deleteResume,
   uploadResume,
   updateResumeStatus,
+  startScoring,
 } from "../api";
 import { GetResumesParams, ResumesResponse } from "./types";
 import { useToast } from "@/shared/ui";
 
 export const useResumes = (params: GetResumesParams) => {
   return useQuery<ResumesResponse>({
-    queryKey: ["resumes", params],
+    queryKey: ["resumes"],
     queryFn: () => getResumes(params),
   });
 };
@@ -140,6 +141,30 @@ export const useUpdateResumeStatus = () => {
       toast({
         title: "Error",
         description: "Failed to update resume status",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+export const useStartScoring = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (resumeId: string) => startScoring(resumeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      toast({
+        title: "Success",
+        description: "Resume scoring started successfully",
+        variant: "success",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to start resume scoring",
         variant: "destructive",
       });
     },

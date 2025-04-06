@@ -11,6 +11,7 @@ import {
   FileIcon,
   Archive,
   RefreshCw,
+  BarChart2,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -34,6 +35,9 @@ import {
   TablePagination,
   ConfirmDialog,
   Progress,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@/shared/ui";
 import {
   useResumes,
@@ -41,6 +45,8 @@ import {
   useDeleteResume,
   useUploadResume,
   useUpdateResumeStatus,
+  useStartScoring,
+  ScoreBadge,
 } from "@/entities/resume";
 
 const formatFileSize = (bytes: number): string => {
@@ -74,16 +80,17 @@ export default function CVGeneratorPage() {
     size: string;
   } | null>(null);
   const [analysisStep, setAnalysisStep] = useState<string>("");
+  const [selectedScoring, setSelectedScoring] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useResumes({
     page,
     per_page: itemsPerPage,
   });
-
   const downloadMutation = useDownloadResume();
   const deleteMutation = useDeleteResume();
   const uploadMutation = useUploadResume();
   const updateStatusMutation = useUpdateResumeStatus();
+  const startScoringMutation = useStartScoring();
 
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(Number(value));
@@ -288,6 +295,7 @@ export default function CVGeneratorPage() {
                       <TableHead className="w-[250px]">Name</TableHead>
                       <TableHead className="w-[150px]">Created</TableHead>
                       <TableHead className="w-[150px]">File Type</TableHead>
+                      <TableHead className="w-[150px]">CV Score</TableHead>
                       <TableHead className="w-[100px]">Status</TableHead>
                       <TableHead className="text-right w-[100px]">
                         Actions
@@ -308,6 +316,36 @@ export default function CVGeneratorPage() {
                         </TableCell>
                         <TableCell>
                           {cv.filename.split(".").pop()?.toUpperCase()}
+                        </TableCell>
+                        <TableCell>
+                          {startScoringMutation.isPending &&
+                          selectedScoring === cv.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <ScoreBadge score={cv.scoring.total_score} />
+                              </TooltipTrigger>
+                              <TooltipContent side="top">
+                                <p>
+                                  Sections: {cv.scoring.sections_score} / 30
+                                </p>
+                                <p>
+                                  Experience: {cv.scoring.experience_score} / 40
+                                </p>
+                                <p>
+                                  Education: {cv.scoring.education_score} / 10
+                                </p>
+                                <p>
+                                  Language: {cv.scoring.language_score} / 10
+                                </p>
+                                <p>
+                                  Timeline: {cv.scoring.timeline_score} / 10
+                                </p>
+                                <p>Total: {cv.scoring.total_score} / 100</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge variant={getStatusBadgeVariant(cv.status)}>
@@ -375,6 +413,17 @@ export default function CVGeneratorPage() {
                                 >
                                   <RefreshCw className="mr-2 h-4 w-4" />
                                   <span>Activate</span>
+                                </DropdownMenuItem>
+                              )}
+                              {!cv.scoring.total_score && (
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedScoring(cv.id);
+                                    startScoringMutation.mutate(cv.id);
+                                  }}
+                                >
+                                  <BarChart2 className="mr-2 h-4 w-4" />
+                                  <span>Start Scoring</span>
                                 </DropdownMenuItem>
                               )}
                               <DropdownMenuItem

@@ -74,3 +74,13 @@ export const updateResumeStatus = async (
     body: JSON.stringify({ status }),
   });
 };
+
+export const startScoring = async (resumeId: string): Promise<void> => {
+  await customFetch<void>(`${API_URL}/resumes/scoring`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ resume_id: resumeId }),
+  });
+};

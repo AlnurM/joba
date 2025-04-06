@@ -7,6 +7,14 @@ export interface Resume {
   id: string;
   user_id: string;
   created_at: string;
+  scoring: {
+    education_score: number;
+    experience_score: number;
+    language_score: number;
+    sections_score: number;
+    timeline_score: number;
+    total_score: number;
+  };
 }
 
 export interface PaginationResponse {
