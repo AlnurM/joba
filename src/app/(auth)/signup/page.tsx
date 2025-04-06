@@ -32,8 +32,8 @@ export default function SignUpPage() {
     username: false,
   });
 
-  const debouncedEmail = useDebounce(formData.email, 500);
-  const debouncedUsername = useDebounce(formData.username, 500);
+  const debouncedEmail = useDebounce(formData.email, 1000);
+  const debouncedUsername = useDebounce(formData.username, 1000);
 
   const checkAvailability = async (
     field: "email" | "username",
@@ -45,7 +45,7 @@ export default function SignUpPage() {
     try {
       const data = await authApi.checkAvailability(field, value);
 
-      if (!data.available) {
+      if (!data.is_available) {
         setErrors((prev) => ({
           ...prev,
           [field]: data.message || `${field} is already taken`,
