@@ -11,6 +11,10 @@ export const getResumes = async (
     per_page: params.per_page.toString(),
   });
 
+  if (params.status) {
+    searchParams.append("status", params.status);
+  }
+
   return customFetch<ResumesResponse>(
     `${API_URL}/resumes/list?${searchParams.toString()}`,
     {

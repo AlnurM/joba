@@ -2,6 +2,6 @@
 
 import CoverLetterPage from "@/pageComponents/cover-letter-page";
 
-export default function CreateCoverLetterPage() {
+export default function EditCoverLetterPage() {
   return <CoverLetterPage />;
 }

@@ -24,4 +24,5 @@ export interface ResumesResponse {
 export interface GetResumesParams {
   page: number;
   per_page: number;
+  status?: ResumeStatus;
 }

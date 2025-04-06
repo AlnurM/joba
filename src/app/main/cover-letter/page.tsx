@@ -149,7 +149,13 @@ export default function CoverLetterList() {
                   </TableHeader>
                   <TableBody>
                     {data.list.map((letter) => (
-                      <TableRow key={letter.id}>
+                      <TableRow
+                        key={letter.id}
+                        className="cursor-pointer"
+                        onClick={() =>
+                          router.push(`/main/cover-letter/${letter.id}`)
+                        }
+                      >
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
                             <FileText className="h-4 min-w-4 text-primary" />

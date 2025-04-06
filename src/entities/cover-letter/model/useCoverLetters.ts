@@ -6,6 +6,8 @@ import {
   updateCoverLetter,
   deleteCoverLetter,
   updateCoverLetterStatus,
+  generateCoverLetterText,
+  renderCoverLetter,
 } from "../api";
 import {
   GetCoverLettersParams,
@@ -22,10 +24,16 @@ export const useCoverLetters = (params: GetCoverLettersParams) => {
   });
 };
 
-export const useCoverLetter = (id: string) => {
+export const useCoverLetter = (id?: string) => {
   return useQuery<CoverLetter>({
     queryKey: ["coverLetter", id],
-    queryFn: () => getCoverLetter(id),
+    queryFn: () => {
+      if (!id) {
+        return Promise.resolve(null as unknown as CoverLetter);
+      }
+      return getCoverLetter(id);
+    },
+    enabled: !!id,
   });
 };
 
@@ -124,6 +132,48 @@ export const useUpdateCoverLetterStatus = () => {
       toast({
         title: "Error",
         description: "Failed to update cover letter status",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+export const useGenerateCoverLetterText = () => {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (data: {
+      resume_id: string;
+      prompt: string;
+      content_type: string;
+    }) => generateCoverLetterText(data),
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to generate text",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+export const useRenderCoverLetter = () => {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (data: {
+      job_description: string;
+      content: {
+        introduction: string;
+        body_part_1: string;
+        body_part_2: string;
+        conclusion: string;
+      };
+    }) => renderCoverLetter(data),
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to render cover letter",
         variant: "destructive",
       });
     },

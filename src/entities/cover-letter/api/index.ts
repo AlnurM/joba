@@ -73,3 +73,35 @@ export const updateCoverLetterStatus = async (
     body: JSON.stringify({ status }),
   });
 };
+
+export const generateCoverLetterText = async (data: {
+  resume_id: string;
+  prompt: string;
+  content_type: string;
+}): Promise<{ text: string }> => {
+  return customFetch<{ text: string }>(`${API_URL}/cover-letters/generate`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+export const renderCoverLetter = async (data: {
+  job_description: string;
+  content: {
+    introduction: string;
+    body_part_1: string;
+    body_part_2: string;
+    conclusion: string;
+  };
+}): Promise<{ text: string }> => {
+  return customFetch<{ text: string }>(`${API_URL}/cover-letters/render`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+};
