@@ -147,7 +147,7 @@ export const useUpdateResumeStatus = () => {
   });
 };
 
-export const useStartScoring = () => {
+export const useStartScoring = ({ onSuccess }: { onSuccess: () => void }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -155,16 +155,17 @@ export const useStartScoring = () => {
     mutationFn: (resumeId: string) => startScoring(resumeId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      onSuccess();
       toast({
         title: "Success",
-        description: "Resume scoring started successfully",
+        description: "Resume scored successfully",
         variant: "success",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to start resume scoring",
+        description: "Failed to score resume",
         variant: "destructive",
       });
     },

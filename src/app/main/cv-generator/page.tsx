@@ -80,7 +80,7 @@ export default function CVGeneratorPage() {
     size: string;
   } | null>(null);
   const [analysisStep, setAnalysisStep] = useState<string>("");
-  const [selectedScoring, setSelectedScoring] = useState<string | null>(null);
+  const [selectedScoring, setSelectedScoring] = useState<string[]>([]);
 
   const { data, isLoading, isError } = useResumes({
     page,
@@ -90,7 +90,11 @@ export default function CVGeneratorPage() {
   const deleteMutation = useDeleteResume();
   const uploadMutation = useUploadResume();
   const updateStatusMutation = useUpdateResumeStatus();
-  const startScoringMutation = useStartScoring();
+  const startScoringMutation = useStartScoring({
+    onSuccess: () => {
+      setSelectedScoring([]);
+    },
+  });
 
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(Number(value));
@@ -319,7 +323,7 @@ export default function CVGeneratorPage() {
                         </TableCell>
                         <TableCell>
                           {startScoringMutation.isPending &&
-                          selectedScoring === cv.id ? (
+                          selectedScoring.includes(cv.id) ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <Tooltip>
@@ -327,22 +331,32 @@ export default function CVGeneratorPage() {
                                 <ScoreBadge score={cv.scoring.total_score} />
                               </TooltipTrigger>
                               <TooltipContent side="top">
-                                <p>
-                                  Sections: {cv.scoring.sections_score} / 30
-                                </p>
-                                <p>
-                                  Experience: {cv.scoring.experience_score} / 40
-                                </p>
-                                <p>
-                                  Education: {cv.scoring.education_score} / 10
-                                </p>
-                                <p>
-                                  Language: {cv.scoring.language_score} / 10
-                                </p>
-                                <p>
-                                  Timeline: {cv.scoring.timeline_score} / 10
-                                </p>
-                                <p>Total: {cv.scoring.total_score} / 100</p>
+                                {cv.scoring.total_score > 0 ? (
+                                  <>
+                                    <p>
+                                      Sections: {cv.scoring.sections_score} / 30
+                                    </p>
+                                    <p>
+                                      Experience: {cv.scoring.experience_score}{" "}
+                                      / 40
+                                    </p>
+                                    <p>
+                                      Education: {cv.scoring.education_score} /
+                                      10
+                                    </p>
+                                    <p>
+                                      Language: {cv.scoring.language_score} / 10
+                                    </p>
+                                    <p>
+                                      Timeline: {cv.scoring.timeline_score} / 10
+                                    </p>
+                                    <p className="border-t border-grey">
+                                      Total: {cv.scoring.total_score} / 100
+                                    </p>
+                                  </>
+                                ) : (
+                                  <p>No score yet</p>
+                                )}
                               </TooltipContent>
                             </Tooltip>
                           )}
@@ -418,7 +432,10 @@ export default function CVGeneratorPage() {
                               {!cv.scoring.total_score && (
                                 <DropdownMenuItem
                                   onClick={() => {
-                                    setSelectedScoring(cv.id);
+                                    setSelectedScoring((prev) => [
+                                      ...prev,
+                                      cv.id,
+                                    ]);
                                     startScoringMutation.mutate(cv.id);
                                   }}
                                 >
