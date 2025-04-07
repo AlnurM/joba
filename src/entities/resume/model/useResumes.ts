@@ -12,7 +12,7 @@ import { useToast } from "@/shared/ui";
 
 export const useResumes = (params: GetResumesParams) => {
   return useQuery<ResumesResponse>({
-    queryKey: ["resumes"],
+    queryKey: ["resumes", params],
     queryFn: () => getResumes(params),
   });
 };
