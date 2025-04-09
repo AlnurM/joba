@@ -108,11 +108,7 @@ export default function CoverLetterList() {
           </p>
         </div>
         <div className="ml-auto">
-          <Button
-            onClick={handleCreateClick}
-            className="bg-blue-500 hover:bg-blue-600"
-            disabled={isCheckingResume}
-          >
+          <Button onClick={handleCreateClick} disabled={isCheckingResume}>
             <Plus className="mr-2 h-4 w-4" />
             Create New
           </Button>

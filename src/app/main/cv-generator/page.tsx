@@ -263,7 +263,11 @@ export default function CVGeneratorPage() {
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Button onClick={handleUploadCV} disabled={isUploading}>
+          <Button
+            variant="outline"
+            onClick={handleUploadCV}
+            disabled={isUploading}
+          >
             {isUploading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -271,7 +275,7 @@ export default function CVGeneratorPage() {
             )}
             {isUploading ? "Uploading..." : "Upload CV"}
           </Button>
-          <Button variant="outline" disabled>
+          <Button disabled>
             <Plus className="mr-2 h-4 w-4" />
             Create New
           </Button>

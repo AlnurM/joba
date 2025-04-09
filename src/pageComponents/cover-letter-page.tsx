@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Copy, Download, Wand2, Save, InfoIcon } from "lucide-react";
-import { useResumes } from "@/entities/resume";
+import { ResumeDropdown } from "@/features/resume-dropdown";
 import {
   useGenerateCoverLetterText,
   useRenderCoverLetter,
@@ -30,64 +30,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   useToast,
 } from "@/shared/ui";
-
-const CVContextDropdown = ({
-  onSelect,
-  selectedResume,
-}: {
-  onSelect: (resumeId: string) => void;
-  selectedResume?: { id: string; filename: string } | null;
-}) => {
-  const { data, isLoading } = useResumes({
-    page: 1,
-    per_page: 100,
-    status: "active",
-  });
-
-  useEffect(() => {
-    if (data?.list.length === 1) {
-      onSelect(data.list[0].id);
-    }
-  }, [data, onSelect]);
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          @
-          <span>
-            {selectedResume ? selectedResume.filename : "Add CV context"}
-          </span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
-        {isLoading ? (
-          <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-        ) : data?.list.length === 0 ? (
-          <DropdownMenuItem disabled>No active resumes found</DropdownMenuItem>
-        ) : (
-          data?.list.map((resume) => (
-            <DropdownMenuItem
-              key={resume.id}
-              onClick={() => onSelect(resume.id)}
-            >
-              {resume.filename}
-            </DropdownMenuItem>
-          ))
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
 
 const renderHighlightedText = (text: string) => {
   const parts = text.split(/(\{\{[^{}]+\}\})/g);
@@ -120,15 +67,7 @@ const CoverLetterPage = () => {
   const [selectedSection, setSelectedSection] = useState("introduction");
   const [prompt, setPrompt] = useState("");
 
-  const { data: resumesData } = useResumes({
-    page: 1,
-    per_page: 100,
-    status: "active",
-  });
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
-  const selectedResume = resumesData?.list.find(
-    (r) => r.id === selectedResumeId,
-  );
   const [templateContent, setTemplateContent] = useState(() => ({
     introduction: localStorage.getItem(`cover-letter-introduction`) || "",
     body_part_1: localStorage.getItem(`cover-letter-body_part_1`) || "",
@@ -287,10 +226,7 @@ const CoverLetterPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <CVContextDropdown
-                onSelect={setSelectedResumeId}
-                selectedResume={selectedResume}
-              />
+              <ResumeDropdown onSelect={setSelectedResumeId} />
               <div>
                 <Select
                   value={selectedSection}

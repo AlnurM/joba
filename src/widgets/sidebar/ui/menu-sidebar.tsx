@@ -55,9 +55,9 @@ const navigationItems = [
     url: "/main/cover-letter",
   },
   {
-    title: "Lucene Query Settings",
+    title: "Job Search Query Builder",
     icon: Search,
-    url: "/main/lucene-query",
+    url: "/main/job-query",
   },
   {
     title: "Integrations",

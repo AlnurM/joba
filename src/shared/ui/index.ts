@@ -20,3 +20,4 @@ export * from "./toast";
 export * from "./dialog";
 export * from "./confirm-dialog";
 export * from "./progress";
+export * from "./collapsible";
