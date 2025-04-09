@@ -271,7 +271,7 @@ export default function CoverLetterList() {
                 <div className="mt-6">
                   <Button
                     onClick={handleCreateClick}
-                    className="bg-blue-500 hover:bg-blue-600"
+                    variant="outline"
                     disabled={isCheckingResume || !hasActiveResume}
                   >
                     <Plus className="mr-2 h-4 w-4" />
