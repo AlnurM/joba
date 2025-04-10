@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileText, Trash2, Plus, RefreshCw } from "lucide-react";
+import { FileText, Trash2, Plus, RefreshCw, Archive } from "lucide-react";
 import {
   SidebarTrigger,
   Button,
@@ -21,32 +21,63 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   TablePagination,
+  Badge,
+  ConfirmDialog,
 } from "@/shared/ui";
+import {
+  useJobQueries,
+  useDeleteJobQuery,
+  useUpdateJobQueryStatus,
+} from "@/entities/job-query";
 
-export default function JobSearchPage() {
+export default function JobQueryList() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  console.log(page);
-  console.log(itemsPerPage);
+  const [queryToDelete, setQueryToDelete] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const { data, isLoading, isError } = useJobQueries({
+    page,
+    per_page: itemsPerPage,
+  });
+  const deleteMutation = useDeleteJobQuery();
+  const updateStatusMutation = useUpdateJobQueryStatus();
 
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(Number(value));
     setPage(1);
   };
 
-  const isLoading = false;
-  const isError = false;
-  const data = {
-    list: [],
-    pagination: {
-      total: 0,
-      currentPage: 1,
-      perPage: 10,
-    },
+  const openDeleteModal = (queryId: string) => {
+    setQueryToDelete(queryId);
+    setDeleteModalOpen(true);
   };
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setQueryToDelete(null);
+  };
+
+  const confirmDelete = () => {
+    if (!queryToDelete) return;
+    deleteMutation.mutate(queryToDelete);
+    closeDeleteModal();
+  };
+
   return (
     <>
+      <ConfirmDialog
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        title="Delete Job Query"
+        description="Are you sure you want to delete this job query? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmVariant="destructive"
+      />
+
       <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
         <SidebarTrigger />
         <div className="hidden md:block">
@@ -65,7 +96,7 @@ export default function JobSearchPage() {
       <main className="p-6">
         <Card>
           <CardHeader>
-            <CardTitle>Job Search Query</CardTitle>
+            <CardTitle>Job Search Queries</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -74,17 +105,16 @@ export default function JobSearchPage() {
               </div>
             ) : isError ? (
               <div className="text-center py-8 text-destructive">
-                Failed to load CVs. Please try again later.
+                Failed to load job queries. Please try again later.
               </div>
-            ) : data?.list.length ? (
+            ) : data?.list?.length ? (
               <div className="flex flex-col gap-4">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[250px]">Name</TableHead>
                       <TableHead className="w-[150px]">Created</TableHead>
-                      <TableHead className="w-[150px]">File Type</TableHead>
-                      <TableHead className="w-[150px]">CV Score</TableHead>
+                      <TableHead className="w-[150px]">Updated</TableHead>
                       <TableHead className="w-[100px]">Status</TableHead>
                       <TableHead className="text-right w-[100px]">
                         Actions
@@ -92,13 +122,34 @@ export default function JobSearchPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data.list.map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium"></TableCell>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
+                    {data.list.map((query) => (
+                      <TableRow
+                        key={query.id}
+                        className="cursor-pointer"
+                        onClick={() =>
+                          router.push(`/main/job-query/${query.id}`)
+                        }
+                      >
+                        <TableCell className="font-medium">
+                          {query.name}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(query.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(query.updated_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              query.status === "active"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {query.status}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -106,6 +157,7 @@ export default function JobSearchPage() {
                                 variant="ghost"
                                 size="sm"
                                 className="h-8 w-8 p-0"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 <span className="sr-only">Open menu</span>
                                 <svg
@@ -124,20 +176,44 @@ export default function JobSearchPage() {
                                 </svg>
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {/* {job.status === "active" ? (
+                            <DropdownMenuContent
+                              align="end"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {query.status === "active" ? (
                                 <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({
+                                      id: query.id,
+                                      status: "archived",
+                                    });
+                                  }}
                                 >
                                   <Archive className="mr-2 h-4 w-4" />
                                   <span>Archive</span>
                                 </DropdownMenuItem>
-                              ) : ( */}
-                              <DropdownMenuItem>
-                                <RefreshCw className="mr-2 h-4 w-4" />
-                                <span>Activate</span>
-                              </DropdownMenuItem>
-                              {/* )} */}
-                              <DropdownMenuItem className="text-destructive">
+                              ) : (
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({
+                                      id: query.id,
+                                      status: "active",
+                                    });
+                                  }}
+                                >
+                                  <RefreshCw className="mr-2 h-4 w-4" />
+                                  <span>Activate</span>
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDeleteModal(query.id);
+                                }}
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 <span>Delete</span>
                               </DropdownMenuItem>
@@ -168,7 +244,7 @@ export default function JobSearchPage() {
                   You haven't created any job search queries yet. Create a new
                   one to get started.
                 </p>
-                <div className="mt-6 flex gap-4">
+                <div className="mt-6">
                   <Button
                     variant="outline"
                     onClick={() => router.push("/main/job-query/create")}

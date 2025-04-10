@@ -129,7 +129,7 @@ export default function CoverLetterList() {
               <div className="text-center py-8 text-destructive">
                 Failed to load cover letters. Please try again later.
               </div>
-            ) : data?.list.length ? (
+            ) : data?.list?.length ? (
               <div className="flex flex-col gap-4">
                 <Table>
                   <TableHeader>
@@ -191,6 +191,7 @@ export default function CoverLetterList() {
                                 variant="ghost"
                                 size="sm"
                                 className="h-8 w-8 p-0"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 <span className="sr-only">Open menu</span>
                                 <svg
@@ -212,24 +213,26 @@ export default function CoverLetterList() {
                             <DropdownMenuContent align="end">
                               {letter.status === "active" ? (
                                 <DropdownMenuItem
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     updateStatusMutation.mutate({
                                       id: letter.id,
                                       status: "archived",
-                                    })
-                                  }
+                                    });
+                                  }}
                                 >
                                   <Archive className="mr-2 h-4 w-4" />
                                   <span>Archive</span>
                                 </DropdownMenuItem>
                               ) : (
                                 <DropdownMenuItem
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     updateStatusMutation.mutate({
                                       id: letter.id,
                                       status: "active",
-                                    })
-                                  }
+                                    });
+                                  }}
                                 >
                                   <RefreshCw className="mr-2 h-4 w-4" />
                                   <span>Activate</span>
@@ -237,7 +240,10 @@ export default function CoverLetterList() {
                               )}
                               <DropdownMenuItem
                                 className="text-destructive"
-                                onClick={() => openDeleteModal(letter.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDeleteModal(letter.id);
+                                }}
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 <span>Delete</span>

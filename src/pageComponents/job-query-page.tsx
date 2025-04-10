@@ -1,5 +1,17 @@
-import { useState } from "react";
-import { Save, Plus, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import {
+  Save,
+  Plus,
+  X,
+  Copy,
+  Wand2,
+  Search,
+  Loader2,
+  ChevronDown,
+  ChevronRight,
+  InfoIcon,
+} from "lucide-react";
 import {
   SidebarTrigger,
   Input,
@@ -16,17 +28,16 @@ import {
   TooltipContent,
   CardHeader,
   CardTitle,
+  useToast,
 } from "@/shared/ui";
-import {
-  Copy,
-  Wand2,
-  Search,
-  Loader2,
-  ChevronDown,
-  ChevronRight,
-  InfoIcon,
-} from "lucide-react";
 import { ResumeDropdown } from "@/features/resume-dropdown";
+import {
+  useJobQuery,
+  useCreateJobQuery,
+  useUpdateJobQuery,
+  useGenerateJobQueryKeywords,
+} from "@/entities/job-query";
+import { JobQueryKeywords } from "@/entities/job-query/model/types";
 
 type KeywordSet = {
   id: string;
@@ -112,26 +123,24 @@ export function KeywordGroup({ keywords, onChange }: KeywordGroupProps) {
 }
 
 const JobQueryPage = () => {
-  const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
+  const { toast } = useToast();
+  const router = useRouter();
+  const params = useParams();
+
+  const { data: jobQuery } = useJobQuery(params.id as string);
   const [jobQueryTitle, setJobQueryTitle] = useState("");
+  const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
   const [jobTitles, setJobTitles] = useState<KeywordSet[]>([
-    {
-      id: "1",
-      keywords: [
-        "Senior React.js developer",
-        "Senior React.js engineer",
-        "React.js lead",
-      ],
-    },
+    { id: "1", keywords: [] },
   ]);
   const [requiredSkills, setRequiredSkills] = useState<KeywordSet[]>([
-    { id: "1", keywords: ["React.js"] },
+    { id: "1", keywords: [] },
   ]);
   const [workArrangements, setWorkArrangements] = useState<KeywordSet[]>([
-    { id: "1", keywords: ["remote", "work from home", "telecommute"] },
+    { id: "1", keywords: [] },
   ]);
   const [positions, setPositions] = useState<KeywordSet[]>([
-    { id: "1", keywords: ["developer", "engineer", "lead"] },
+    { id: "1", keywords: [] },
   ]);
   const [excludedKeywords, setExcludedKeywords] = useState<KeywordSet[]>([
     { id: "1", keywords: [] },
@@ -145,7 +154,10 @@ const JobQueryPage = () => {
     include: true,
     exclude: true,
   });
-  console.log(selectedResumeId);
+
+  const generateMutation = useGenerateJobQueryKeywords();
+  const createMutation = useCreateJobQuery();
+  const updateMutation = useUpdateJobQuery();
 
   const generateLuceneQuery = () => {
     const parts: string[] = [];
@@ -209,48 +221,34 @@ const JobQueryPage = () => {
     return query;
   };
 
-  const generateKeywords = () => {
-    // In a real implementation, this would call an API to generate keywords
-    // For now, we'll just populate with sample data
-    setJobTitles([
-      {
-        id: "1",
-        keywords: [
-          "Senior React.js Developer",
-          "React.js Lead",
-          "Frontend Engineer",
-          "JavaScript Developer",
-          "UI Developer",
-        ],
-      },
-    ]);
+  const handleGenerateKeywords = () => {
+    if (!selectedResumeId) {
+      toast({
+        title: "Error",
+        description: "Please select a CV first",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    setRequiredSkills([
+    generateMutation.mutate(
+      { resume_id: selectedResumeId },
       {
-        id: "1",
-        keywords: ["React.js", "TypeScript", "JavaScript", "Redux", "Next.js"],
+        onSuccess: (data) => {
+          setJobTitles([{ id: "1", keywords: data.keywords.job_titles }]);
+          setRequiredSkills([
+            { id: "1", keywords: data.keywords.required_skills },
+          ]);
+          setWorkArrangements([
+            { id: "1", keywords: data.keywords.work_arrangements },
+          ]);
+          setPositions([{ id: "1", keywords: data.keywords.positions }]);
+          setExcludedKeywords([
+            { id: "1", keywords: data.keywords.exclude_words },
+          ]);
+        },
       },
-    ]);
-
-    setWorkArrangements([
-      {
-        id: "1",
-        keywords: [
-          "remote",
-          "work from home",
-          "telecommute",
-          "hybrid",
-          "flexible",
-        ],
-      },
-    ]);
-
-    setPositions([
-      {
-        id: "1",
-        keywords: ["developer", "engineer", "lead", "architect", "specialist"],
-      },
-    ]);
+    );
   };
 
   const testQuery = (platform: string) => {
@@ -284,6 +282,59 @@ const JobQueryPage = () => {
     }));
   };
 
+  const handleSaveTemplate = () => {
+    const keywords: JobQueryKeywords = {
+      job_titles: jobTitles[0].keywords,
+      required_skills: requiredSkills[0].keywords,
+      work_arrangements: workArrangements[0].keywords,
+      positions: positions[0].keywords,
+      exclude_words: excludedKeywords[0].keywords,
+    };
+
+    if (params.id) {
+      updateMutation.mutate({
+        id: params.id as string,
+        data: {
+          name: jobQueryTitle || "Basic",
+          keywords,
+          query: generateLuceneQuery(),
+        },
+      });
+    } else {
+      createMutation.mutate(
+        {
+          name: jobQueryTitle || "Basic",
+          keywords,
+          query: generateLuceneQuery(),
+          status: "archived",
+        },
+        {
+          onSuccess: (data) => {
+            setJobQueryTitle("");
+            router.push(`/main/job-query/${data.id}`);
+          },
+        },
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (jobQuery) {
+      setJobQueryTitle(jobQuery.name);
+      setJobTitles([{ id: "1", keywords: jobQuery.keywords.job_titles }]);
+      setRequiredSkills([
+        { id: "1", keywords: jobQuery.keywords.required_skills },
+      ]);
+      setWorkArrangements([
+        { id: "1", keywords: jobQuery.keywords.work_arrangements },
+      ]);
+      setPositions([{ id: "1", keywords: jobQuery.keywords.positions }]);
+      setExcludedKeywords([
+        { id: "1", keywords: jobQuery.keywords.exclude_words },
+      ]);
+    }
+  }, [jobQuery]);
+
   return (
     <>
       <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
@@ -301,7 +352,7 @@ const JobQueryPage = () => {
             onChange={(e) => setJobQueryTitle(e.target.value)}
             className="w-80"
           />
-          <Button>
+          <Button onClick={handleSaveTemplate}>
             <Save className="h-4 w-4 mr-1" />
             Save Template
           </Button>
@@ -319,19 +370,18 @@ const JobQueryPage = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={generateKeywords}
-                    // disabled={generateMutation.isPending}
+                    onClick={handleGenerateKeywords}
+                    disabled={generateMutation.isPending}
                   >
-                    {/* {generateMutation.isPending ? (
+                    {generateMutation.isPending ? (
                       <div className="animate-spin h-4 w-4 border-2 border-current rounded-full border-t-transparent" />
-                    ) : ( */}
-                    <Wand2 className="h-4 w-4 mr-1" />
-                    {/* )} */}
+                    ) : (
+                      <Wand2 className="h-4 w-4 mr-1" />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  {/* {generateMutation.isPending ? "Generating..." : "Generate"} */}
-                  Generate
+                  {generateMutation.isPending ? "Generating..." : "Generate"}
                 </TooltipContent>
               </Tooltip>
             </div>

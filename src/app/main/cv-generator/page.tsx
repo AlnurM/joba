@@ -295,7 +295,7 @@ export default function CVGeneratorPage() {
               <div className="text-center py-8 text-destructive">
                 Failed to load CVs. Please try again later.
               </div>
-            ) : data?.list.length ? (
+            ) : data?.list?.length ? (
               <div className="flex flex-col gap-4">
                 <Table>
                   <TableHeader>
