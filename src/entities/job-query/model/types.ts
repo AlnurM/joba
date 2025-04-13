@@ -35,4 +35,5 @@ export interface JobQueriesResponse {
 export interface GetJobQueriesParams {
   page: number;
   per_page: number;
+  status?: JobQueryStatus;
 }

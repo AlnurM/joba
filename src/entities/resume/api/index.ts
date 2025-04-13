@@ -41,7 +41,7 @@ export const deleteResume = async (resumeId: string): Promise<void> => {
   });
 };
 
-export const uploadResume = async (file: File): Promise<void> => {
+export const uploadResume = async (file: File): Promise<{ _id: string }> => {
   if (
     ![
       "application/pdf",
@@ -55,11 +55,14 @@ export const uploadResume = async (file: File): Promise<void> => {
   const formData = new FormData();
   formData.append("file", file);
 
-  await customFetch<void>(`${API_URL}/resumes/upload`, {
-    method: "POST",
-    body: formData,
-    headers: {}, // Важно: не устанавливаем Content-Type, браузер сам установит с boundary для FormData
-  });
+  return await customFetch<{ _id: string }>(
+    `${API_URL}/resumes/upload?status=active`,
+    {
+      method: "POST",
+      body: formData,
+      headers: {}, // Важно: не устанавливаем Content-Type, браузер сам установит с boundary для FormData
+    },
+  );
 };
 
 export const updateResumeStatus = async (

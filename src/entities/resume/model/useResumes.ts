@@ -98,13 +98,14 @@ export const useUploadResume = () => {
 
   return useMutation({
     mutationFn: (file: File) => uploadResume(file),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
       toast({
         title: "Success",
         description: "Resume uploaded successfully",
         variant: "success",
       });
+      return data;
     },
     onError: (error) => {
       toast({

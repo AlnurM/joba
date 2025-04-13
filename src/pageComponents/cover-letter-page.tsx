@@ -155,7 +155,7 @@ const CoverLetterPage = () => {
         {
           name: coverLetterTitle || "Basic",
           content: templateContent,
-          status: "archived",
+          status: "active",
         },
         {
           onSuccess: (data) => {
@@ -164,7 +164,13 @@ const CoverLetterPage = () => {
             localStorage.setItem(`cover-letter-body_part_1`, "");
             localStorage.setItem(`cover-letter-body_part_2`, "");
             localStorage.setItem(`cover-letter-conclusion`, "");
-            router.push(`/main/cover-letter/${data.id}`);
+            const routerBack = sessionStorage.getItem("routerBack");
+            if (routerBack) {
+              sessionStorage.removeItem("routerBack");
+              router.push(routerBack);
+            } else {
+              router.push(`/main/cover-letter/${data.id}`);
+            }
           },
         },
       );

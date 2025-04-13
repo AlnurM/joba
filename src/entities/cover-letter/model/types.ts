@@ -30,4 +30,5 @@ export interface CoverLettersResponse {
 export interface GetCoverLettersParams {
   page: number;
   per_page: number;
+  status?: CoverLetterStatus;
 }

@@ -1,5 +1,7 @@
-// import { DashboardStats } from "@/components/dashboard-stats"
-// import { RecentApplications } from "@/components/recent-applications"
+"use client";
+
+import { useRouter } from "next/navigation";
+import { FileText, PenLine, Search, Plus } from "lucide-react";
 import {
   SidebarTrigger,
   Button,
@@ -9,16 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui";
-import {
-  Pause,
-  Play,
-  RefreshCw,
-  FileText,
-  PenLine,
-  Search,
-} from "lucide-react";
 
 export default function Home() {
+  const router = useRouter();
   return (
     <>
       <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
@@ -30,58 +25,42 @@ export default function Home() {
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:block">Refresh</span>
-          </Button>
-          <Button variant="outline" size="sm">
-            <Pause className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:block">Pause Automation</span>
-          </Button>
-          <Button size="sm">
-            <Play className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:block">Resume</span>
+          <Button onClick={() => router.push("/main/flow/create")}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create New Flow
           </Button>
         </div>
       </header>
       <main className="flex-1 space-y-6 p-6">
-        {/* <DashboardStats /> */}
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* <RecentApplications /> */}
-
-          <Card>
-            <CardHeader>
-              <CardTitle>AI Match Score</CardTitle>
-              <CardDescription>
-                Your resume match score for recent applications
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px] rounded-lg bg-muted/50 flex items-center justify-center">
-                Chart placeholder
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         <div className="grid gap-6 md:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button className="w-full justify-start" variant="outline">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={() => router.push("/main/cv-generator/create")}
+              >
                 <FileText className="mr-2 h-4 w-4" />
                 Generate New CV
               </Button>
-              <Button className="w-full justify-start" variant="outline">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={() => router.push("/main/cover-letter/create")}
+              >
                 <PenLine className="mr-2 h-4 w-4" />
-                Create Cover Letter
+                Create Cover Letter Template
               </Button>
-              <Button className="w-full justify-start" variant="outline">
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={() => router.push("/main/job-query/create")}
+              >
                 <Search className="mr-2 h-4 w-4" />
-                Update Job Search
+                Create Job Search Query
               </Button>
             </CardContent>
           </Card>

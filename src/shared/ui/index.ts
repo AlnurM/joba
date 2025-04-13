@@ -21,3 +21,5 @@ export * from "./dialog";
 export * from "./confirm-dialog";
 export * from "./progress";
 export * from "./collapsible";
+export * from "./radio-group";
+export * from "./label";

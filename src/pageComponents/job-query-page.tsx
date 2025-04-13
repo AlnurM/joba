@@ -306,12 +306,18 @@ const JobQueryPage = () => {
           name: jobQueryTitle || "Basic",
           keywords,
           query: generateLuceneQuery(),
-          status: "archived",
+          status: "active",
         },
         {
           onSuccess: (data) => {
             setJobQueryTitle("");
-            router.push(`/main/job-query/${data.id}`);
+            const routerBack = sessionStorage.getItem("routerBack");
+            if (routerBack) {
+              sessionStorage.removeItem("routerBack");
+              router.push(routerBack);
+            } else {
+              router.push(`/main/job-query/${data.id}`);
+            }
           },
         },
       );
