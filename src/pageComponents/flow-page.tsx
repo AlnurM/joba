@@ -19,6 +19,7 @@ import { ResumeUpload } from "@/features/resume-upload";
 import { useResumes } from "@/entities/resume";
 import { useCoverLetters } from "@/entities/cover-letter";
 import { useJobQueries } from "@/entities/job-query";
+import { createJobFlow } from "@/entities/job-flow/api";
 import {
   SidebarTrigger,
   Button,
@@ -29,11 +30,13 @@ import {
   RadioGroupItem,
   Label,
   Skeleton,
+  useToast,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 
 const FlowPage = () => {
   const router = useRouter();
+  const { toast } = useToast();
   const [selectedResume, setSelectedResume] = useState<string | null>(
     () => localStorage.getItem("selectedResume") ?? null,
   );
@@ -43,7 +46,7 @@ const FlowPage = () => {
   const [selectedQueryTemplate, setSelectedQueryTemplate] = useState<
     string | null
   >(() => localStorage.getItem("selectedQueryTemplate") ?? null);
-  const [source, setSource] = useState<"linkedin" | "websites" | null>(null);
+  const [source, setSource] = useState<"linkedin" | "internal" | null>(null);
   const [isLaunching, setIsLaunching] = useState(false);
   const [activeStep, setActiveStep] = useState(() =>
     localStorage.getItem("activeStep")
@@ -85,24 +88,48 @@ const FlowPage = () => {
     localStorage.setItem("selectedQueryTemplate", id);
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = async () => {
+    if (
+      !selectedResume ||
+      !selectedCoverLetter ||
+      !selectedQueryTemplate ||
+      !source
+    ) {
+      return;
+    }
+
     setIsLaunching(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLaunching(false);
-      // Here you would handle the actual launch logic
-      console.log({
-        cv: selectedResume,
-        coverLetter: selectedCoverLetter,
-        query: selectedQueryTemplate,
-        source,
+
+    try {
+      await createJobFlow({
+        resume_id: selectedResume,
+        cover_letter_id: selectedCoverLetter,
+        job_query_id: selectedQueryTemplate,
+        source: source,
+        status: "active",
+      });
+
+      toast({
+        title: "Success",
+        description: "Job flow successfully launched",
+        variant: "success",
       });
 
       localStorage.removeItem("activeStep");
       localStorage.removeItem("selectedResume");
       localStorage.removeItem("selectedCoverLetter");
       localStorage.removeItem("selectedQueryTemplate");
-    }, 2000);
+
+      router.push("/main");
+    } catch (error) {
+      setIsLaunching(false);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to launch job flow",
+        variant: "destructive",
+      });
+    }
   };
 
   const isStepComplete = (step: number) => {
@@ -507,7 +534,7 @@ const FlowPage = () => {
               <RadioGroup
                 value={source || ""}
                 onValueChange={(value) =>
-                  setSource(value as "linkedin" | "websites")
+                  setSource(value as "linkedin" | "internal")
                 }
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
               >
@@ -531,18 +558,18 @@ const FlowPage = () => {
 
                 <div>
                   <RadioGroupItem
-                    value="websites"
-                    id="websites"
+                    value="internal"
+                    id="internal"
                     className="peer sr-only"
                   />
                   <Label
-                    htmlFor="websites"
+                    htmlFor="internal"
                     className="flex flex-col items-center justify-center h-40 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <Globe className="h-10 w-10 mb-2" />
                     <div className="font-medium">Job Websites Database</div>
                     <div className="text-sm text-muted-foreground text-center mt-1">
-                      Search across multiple job boards and company websites
+                      Search across multiple job boards and company internal
                     </div>
                   </Label>
                 </div>
