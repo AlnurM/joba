@@ -23,3 +23,4 @@ export * from "./progress";
 export * from "./collapsible";
 export * from "./radio-group";
 export * from "./label";
+export * from "./accordion";
