@@ -50,8 +50,8 @@ export function useAuth() {
 
   const updateOnboarding = async (onboarding: boolean) => {
     try {
-      authApi.updateOnboarding(onboarding);
       setOnboarding(onboarding);
+      authApi.updateOnboarding(onboarding);
     } catch (error) {
       console.error("Failed to update onboarding status:", error);
       throw error;
