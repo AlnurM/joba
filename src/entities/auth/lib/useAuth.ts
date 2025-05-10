@@ -1,32 +1,61 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { useAuthStore } from "../model/store";
 import { AuthTokens } from "../model/types";
+import { storage } from "@/shared/lib";
+import { authApi } from "../api/authApi";
 
 export function useAuth() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, setAuthenticated, setLoading } =
-    useAuthStore();
+  const {
+    isAuthenticated,
+    isLoading,
+    setAuthenticated,
+    setLoading,
+    setUserData,
+    setOnboarding,
+    clearUserData,
+  } = useAuthStore();
 
   useEffect(() => {
-    const accessToken = Cookies.get("access_token");
+    const accessToken = storage.get("access_token");
     setAuthenticated(!!accessToken);
     setLoading(false);
-  }, [setAuthenticated, setLoading]);
+  }, []);
 
   const login = (tokens: AuthTokens) => {
-    Cookies.set("access_token", tokens.access_token, { expires: 7 }); // 7 days
-    Cookies.set("refresh_token", tokens.refresh_token, { expires: 30 }); // 30 days
+    storage.set("access_token", tokens.access_token);
+    storage.set("refresh_token", tokens.refresh_token);
     setAuthenticated(true);
-    router.push("/main");
+
+    authApi
+      .me()
+      .then((data) => {
+        setUserData(data.id, data.onboarding);
+        router.push("/main");
+      })
+      .catch(() => {
+        clearUserData();
+        router.push("/main");
+      });
   };
 
   const logout = () => {
-    Cookies.remove("access_token");
-    Cookies.remove("refresh_token");
+    storage.remove("access_token");
+    storage.remove("refresh_token");
     setAuthenticated(false);
+    clearUserData();
     router.push("/signin");
+  };
+
+  const updateOnboarding = async (onboarding: boolean) => {
+    try {
+      authApi.updateOnboarding(onboarding);
+      setOnboarding(onboarding);
+    } catch (error) {
+      console.error("Failed to update onboarding status:", error);
+      throw error;
+    }
   };
 
   return {
@@ -34,5 +63,6 @@ export function useAuth() {
     isLoading,
     login,
     logout,
+    updateOnboarding,
   };
 }

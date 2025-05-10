@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   BarChart3,
   FileText,
@@ -36,7 +36,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/ui";
-import { storage } from "@/shared/lib";
+import { useAuth } from "@/entities/auth";
 
 const navigationItems = [
   {
@@ -72,8 +72,8 @@ const navigationItems = [
 ];
 
 export function MenuSidebar() {
-  const router = useRouter();
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   const isActive = (url: string) => {
     if (url === "/main") {
@@ -149,9 +149,7 @@ export function MenuSidebar() {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
-                  storage.remove("access_token");
-                  storage.remove("refresh_token");
-                  router.push("/signin");
+                  logout();
                 }}
               >
                 <LogOut className="mr-2 h-4 w-4" />

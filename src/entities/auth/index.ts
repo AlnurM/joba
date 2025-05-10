@@ -11,3 +11,4 @@ export { authApi } from "./api/authApi";
 // Types
 export type { AuthTokens } from "./model/types";
 export type { AuthResponse } from "./model/types";
+export { useAuthStore } from "./model/store";

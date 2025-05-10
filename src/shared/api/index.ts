@@ -74,6 +74,7 @@ export async function customFetch<T>(
         if (!refreshResponse.ok) {
           storage.remove("access_token");
           storage.remove("refresh_token");
+          window.location.href = "/signin";
           throw new Error("Failed to refresh token");
         }
 

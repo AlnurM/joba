@@ -9,7 +9,14 @@ export interface AuthResponse {
   message?: string;
 }
 
+export interface MeResponse {
+  id: string;
+  onboarding: boolean;
+}
+
 export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
+  userId?: string;
+  onboarding?: boolean;
 }

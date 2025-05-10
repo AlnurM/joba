@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { MenuSidebar } from "@/widgets/sidebar";
+import { OnboardingModal } from "@/features/onboarding-modal";
 import { AuthGuard } from "@/entities/auth";
 import { ThemeProvider, SidebarProvider, SidebarInset } from "@/shared/ui";
 import "@/app/globals.css";
@@ -30,6 +31,7 @@ export default function MainLayout({
               <AuthGuard>{children}</AuthGuard>
             </SidebarInset>
           </SidebarProvider>
+          <OnboardingModal />
         </ThemeProvider>
       </body>
     </html>

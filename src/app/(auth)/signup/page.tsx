@@ -87,6 +87,7 @@ export default function SignUpPage() {
         formData.username,
         formData.password,
       );
+      console.log(data);
       login(data);
     } catch (err) {
       setErrors((prev) => ({

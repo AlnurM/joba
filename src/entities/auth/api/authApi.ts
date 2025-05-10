@@ -1,4 +1,4 @@
-import { AuthResponse } from "../model/types";
+import { AuthResponse, MeResponse } from "../model/types";
 import { customFetch } from "@/shared/api";
 import { storage } from "@/shared/lib";
 
@@ -79,5 +79,21 @@ export const authApi = {
     storage.set("access_token", data.access_token);
     storage.set("refresh_token", data.refresh_token);
     return data;
+  },
+
+  async me(): Promise<MeResponse> {
+    return customFetch<MeResponse>(`${API_URL}/auth/me`, {
+      method: "GET",
+    });
+  },
+
+  async updateOnboarding(onboarding: boolean): Promise<void> {
+    await customFetch<void>(`${API_URL}/auth/onboarding`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ onboarding }),
+    });
   },
 };
