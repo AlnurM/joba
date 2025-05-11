@@ -21,6 +21,12 @@ export function useAuth() {
     const accessToken = storage.get("access_token");
     setAuthenticated(!!accessToken);
     setLoading(false);
+
+    if (accessToken) {
+      authApi.me().then((data) => {
+        setUserData(data.id, data.onboarding);
+      });
+    }
   }, []);
 
   const login = (tokens: AuthTokens) => {

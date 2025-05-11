@@ -24,3 +24,5 @@ export * from "./collapsible";
 export * from "./radio-group";
 export * from "./label";
 export * from "./accordion";
+export * from "./checkbox";
+export * from "./scroll-area";

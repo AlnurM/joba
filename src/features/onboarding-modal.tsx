@@ -17,7 +17,10 @@ export function OnboardingModal() {
   const { onboarding } = useAuthStore();
 
   return (
-    <Dialog open={!onboarding} onOpenChange={() => updateOnboarding(true)}>
+    <Dialog
+      open={onboarding === false}
+      onOpenChange={() => updateOnboarding(true)}
+    >
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">

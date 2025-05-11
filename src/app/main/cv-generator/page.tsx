@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   FileText,
   Upload,
@@ -61,6 +62,7 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 export default function CVGeneratorPage() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
@@ -177,7 +179,13 @@ export default function CVGeneratorPage() {
                   </TableHeader>
                   <TableBody>
                     {data.list.map((cv) => (
-                      <TableRow key={cv.id}>
+                      <TableRow
+                        key={cv.id}
+                        className="cursor-pointer"
+                        onClick={() =>
+                          router.push(`/main/cv-generator/${cv.id}`)
+                        }
+                      >
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
                             <FileText className="h-4 min-w-4 text-primary" />
@@ -263,36 +271,39 @@ export default function CVGeneratorPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                                onClick={() =>
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   downloadMutation.mutate({
                                     resumeId: cv.id,
                                     filename: cv.filename,
-                                  })
-                                }
+                                  });
+                                }}
                               >
                                 <Download className="mr-2 h-4 w-4" />
                                 <span>Download</span>
                               </DropdownMenuItem>
                               {cv.status === "active" ? (
                                 <DropdownMenuItem
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     updateStatusMutation.mutate({
                                       resumeId: cv.id,
                                       status: "archived",
-                                    })
-                                  }
+                                    });
+                                  }}
                                 >
                                   <Archive className="mr-2 h-4 w-4" />
                                   <span>Archive</span>
                                 </DropdownMenuItem>
                               ) : (
                                 <DropdownMenuItem
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     updateStatusMutation.mutate({
                                       resumeId: cv.id,
                                       status: "active",
-                                    })
-                                  }
+                                    });
+                                  }}
                                 >
                                   <RefreshCw className="mr-2 h-4 w-4" />
                                   <span>Activate</span>
@@ -300,7 +311,8 @@ export default function CVGeneratorPage() {
                               )}
                               {!cv.scoring.total_score && (
                                 <DropdownMenuItem
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setSelectedScoring((prev) => [
                                       ...prev,
                                       cv.id,
@@ -314,7 +326,10 @@ export default function CVGeneratorPage() {
                               )}
                               <DropdownMenuItem
                                 className="text-destructive"
-                                onClick={() => openDeleteModal(cv.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDeleteModal(cv.id);
+                                }}
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 <span>Delete</span>
