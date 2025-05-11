@@ -40,7 +40,7 @@ export function ResumeChat() {
 
     // Simulate AI response
     setTimeout(() => {
-      const aiResponse = generateAIResponse(inputValue, cvData);
+      const aiResponse = generateAIResponse(inputValue);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: aiResponse,
